@@ -8,20 +8,28 @@ Hope Neels
 ## Summary
 This Java command-line program is an exploration of how performance is increased (or not!) when using multithreading with Thread and ExecutorService classes. I conducted timed experiments on three versions of the program with various data input sizes; see below for my observations.
 
-## Genome Class
+## How to Run
+Clone this repo and run the Version1.java, Version2.java, and Version3.java classes from your terminal. Compare your results printed to the console with my data summarized below.
+
+<hr>
+
+## Description of Classes
+### Genome Class
 This class contains one method, makeSequence(), which is a static method that returns a String of length 10 containing a random assortment of the letters A,T,G,C, representing a genome sequence. The method uses a char array, a Random int generator, and a StringBuilder object to generate a random letter chosen from A,T,G,C for each of the ten characters in the sequence. When all 10 characters have been appended, it returns the String representation of the StringBuilder that holds the sequence.
 
-## GenomeTask Class
+### GenomeTask Class
 This class implements the Runnable interface and defines its run() method to call the Genome class's makeSequence() method 20 times, additionally printing information about when the thread begins and finishes its work. In the runtime tests below, the for-loop on line 22 is adjusted to create larger data sets. Because it implements Runnable, a new GenomeTask object can be passed to the Thread constructor (as in Version2 below) or to ExecutorService's execute() method (as in Version3 below).
 
-## Version1 Class
+### Version1 Class
 This class contains a main() method that creates 100 random genome sequences by calling Genome.makeSequence() 100 times, using a for-loop. It clocks the start time before it begins, then prints the elapsed time when the process is complete. Since there is no concurrency in this version, it does not use the GenomeTask class. (To create larger data sets in the tests below, the number of for-loop iterations is simply increased.)
 
-## Version2 Class
+### Version2 Class
 This class updates the Version1 class, now using concurrency in an attempt make the process faster. (As you can see in the runtime tests below, it actually runs slower.) The process start time is saved so the elapsed time can be printed at the end. Five new threads are created in a for-loop, passing a new GenomeTask into the constructor of each, and the Threads are stored in an array so they can be accessed again once all threads have started running. (In the runtime tests below, I experiment with 5, 4, 3, and 1 spawned threads.) Once all five Threads are running, the Threads array is iterated over and each thread is joined to the main thread, ensuring that the elapsed time is only printed once all threads are finished. (Importantly, join() can't be called in the first loop where the threads are started, otherwise the main thread would wait for each thread to finish before starting the next one and they wouldn't run concurrently as they do now.)
 
-## Version3 Class
+### Version3 Class
 This class uses concurrency like Version2, but it uses the ExecutorService class to create and manage the running threads instead of the Thread class. As in the other classes, the elapsed runtime of the process is printed to the console. An ExecutorService object is created and its execute() method is called to create five new threads, passing each a new GenomeTask. (As in Version2, the number of iterations on line 24 is adjusted in the runtime tests below.) After all threads are started, shutdown() and awaitTermination() are called on the ExecutorService object to ensure that the main() method waits for all threads to finish, so that the proper elapsed time is printed when all tasks are complete.
+
+<hr>
 
 ## Runtime Experiments
 To test the efficiency of the multithreading process, I tested the three versions using 100, 10,000, and 1,000,000 total printed genome sequences, and 1, 2, 4, and 5 threads. For each test, I calculated the runtime as an average of 3 runs, and the total overall number of genome sequences printed was the same regardless of how many threads shared the work.
